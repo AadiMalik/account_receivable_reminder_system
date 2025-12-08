@@ -22,4 +22,16 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('company', [HomeController::class, 'adminHome'])->name('admin.home')->middleware('is_admin');
+// Route::get('company', [HomeController::class, 'adminHome'])->name('admin.home')->middleware('is_admin');
+Route::get('/company', function () {
+    return view('company.index');
+});
+Route::get('/dashboard', function () {
+    return view('dashboard');
+});
+Route::get('/customer', function () {
+    return view('customer.index');
+});
+Route::get('/customer/detail', function () {
+    return view('customer.detail');
+});
