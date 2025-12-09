@@ -9,10 +9,10 @@
             $menuItems = [
             ['id'=>'dashboard','label'=>'Dashboard','url'=>'/dashboard','icon'=>'fas fa-tachometer-alt'],
             ['id'=>'customers','label'=>'Customers','url'=>'/customer','icon'=>'fas fa-users'],
-            ['id'=>'invoices','label'=>'Invoices','url'=>'/dashboard','icon'=>'fas fa-file-invoice'],
-            ['id'=>'whatsapp','label'=>'WhatsApp','url'=>'/dashboard','icon'=>'fab fa-whatsapp'],
-            ['id'=>'erp-sync','label'=>'ERP Sync','url'=>'/dashboard','icon'=>'fas fa-sync-alt'],
-            ['id'=>'settings','label'=>'Settings','url'=>'/dashboard','icon'=>'fas fa-cog'],
+            ['id'=>'invoices','label'=>'Invoices','url'=>'/invoice','icon'=>'fas fa-file-invoice'],
+            ['id'=>'whatsapp','label'=>'WhatsApp','url'=>'/whatsapp','icon'=>'fab fa-whatsapp'],
+            ['id'=>'erp-sync','label'=>'ERP Sync','url'=>'/erp-sync','icon'=>'fas fa-sync-alt'],
+            ['id'=>'settings','label'=>'Settings','url'=>'/setting','icon'=>'fas fa-cog'],
             ];
             $currentPage = $currentPage ?? 'dashboard';
             @endphp

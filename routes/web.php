@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Auth::routes();
@@ -34,4 +34,23 @@ Route::get('/customer', function () {
 });
 Route::get('/customer/detail', function () {
     return view('customer.detail');
+});
+
+Route::get('/invoice', function () {
+    return view('invoice.index');
+});
+Route::get('/invoice/detail', function () {
+    return view('invoice.detail');
+});
+
+Route::get('/whatsapp', function () {
+    return view('whatsapp.index');
+});
+
+Route::get('/erp-sync', function () {
+    return view('erp_sync.index');
+});
+
+Route::get('/setting', function () {
+    return view('setting');
 });

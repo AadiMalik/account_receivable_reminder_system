@@ -3,7 +3,7 @@
 
 @section('content')
 
-<a href="{{ url('customer') }}" class="btn btn-outline-secondary mb-3">
+<a href="{{ url('customer') }}" class="btn btn-link text-decoration-none">
     <i class="fas fa-arrow-left me-1"></i> Back to Customers
 </a>
 
