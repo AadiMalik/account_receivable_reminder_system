@@ -78,7 +78,7 @@
                     {{-- <button type="submit" class="btn w-100 text-white" style="background:#2563eb;">
                         Sign in
                     </button> --}}
-                    <a href="{{url('dashboard')}}" class="btn w-100 text-white" style="background:#2563eb;">
+                    <a href="{{url('company')}}" class="btn w-100 text-white" style="background:#2563eb;">
                         Sign in
                     </a>
 
