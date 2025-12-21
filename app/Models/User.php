@@ -4,13 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable,SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -24,19 +25,9 @@ class User extends Authenticatable
         'website',
         'role_id',
         'password',
-        'green_api_instance',
-        'green_api_token',
-        'green_webhook_url',
-        'green_sent_message',
-        'green_received_message',
-        'green_monthly_limit',
-        'green_active',
-        'erp_system',
-        'erp_api_base_url',
-        'erp_api_token',
-        'erp_api_secret',
-        'erp_auto_sync',
-        'erp_active'
+        'company_id',
+        'createdby_id',
+        'updatedby_id',
     ];
 
     /**
@@ -57,4 +48,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class,'company_id');
+    }
 }

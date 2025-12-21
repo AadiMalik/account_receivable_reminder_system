@@ -75,12 +75,12 @@
                         </div>
                     </div>
                     <!-- Submit -->
-                    {{-- <button type="submit" class="btn w-100 text-white" style="background:#2563eb;">
+                    <button type="submit" class="btn w-100 text-white" style="background:#2563eb;">
                         Sign in
-                    </button> --}}
-                    <a href="{{url('company')}}" class="btn w-100 text-white" style="background:#2563eb;">
+                    </button>
+                    <!-- <a href="{{url('company')}}" class="btn w-100 text-white" style="background:#2563eb;">
                         Sign in
-                    </a>
+                    </a> -->
 
                 </form>
 

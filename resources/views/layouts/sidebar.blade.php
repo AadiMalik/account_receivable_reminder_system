@@ -8,6 +8,7 @@
             @php
             $menuItems = [
             ['id'=>'dashboard','label'=>'Dashboard','url'=>'/dashboard','icon'=>'fas fa-tachometer-alt'],
+            ['id'=>'Users','label'=>'Users','url'=>'/users','icon'=>'fas fa-users'],
             ['id'=>'customers','label'=>'Customers','url'=>'/customer','icon'=>'fas fa-users'],
             ['id'=>'invoices','label'=>'Invoices','url'=>'/invoice','icon'=>'fas fa-file-invoice'],
             ['id'=>'whatsapp','label'=>'WhatsApp','url'=>'/whatsapp','icon'=>'fab fa-whatsapp'],

@@ -1,179 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>Select Company</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Management</title>
 
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-      <!-- Font Awesome 5 -->
-      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-      <style>
-            body {
-                  background: #f9fafb;
-            }
-
-            .company-card {
-                  border: 1px solid #e5e7eb;
-                  border-radius: 10px;
-                  background: #fff;
-                  transition: 0.2s;
-            }
-
-            .company-card:hover {
-                  border-color: #d1d5db;
-            }
-
-            .icon-box {
-                  background: #dbeafe;
-                  padding: 12px;
-                  border-radius: 8px;
-            }
-
-            .company-title {
-                  font-size: 20px;
-                  font-weight: 600;
-                  color: #111827;
-            }
-
-            .company-sub {
-                  color: #6b7280;
-            }
-
-            .btn-blue {
-                  background: #2563eb;
-                  color: #fff;
-            }
-
-            .btn-blue:hover {
-                  background: #1e40af;
-                  color: #fff;
-            }
-      </style>
+    <style>
+        body { background: #f9fafb; }
+        .company-card { border:1px solid #e5e7eb; border-radius:10px; background:#fff; transition:0.2s; margin-bottom:10px; }
+        .company-card:hover { border-color:#d1d5db; }
+        .icon-box { background:#dbeafe; padding:12px; border-radius:8px; display:inline-block; }
+        .company-title { font-size:18px; font-weight:600; color:#111827; }
+        .company-sub { color:#6b7280; }
+        .btn-blue { background:#2563eb; color:#fff; }
+        .btn-blue:hover { background:#1e40af; color:#fff; }
+    </style>
 </head>
-
 <body>
 
-      <div class="min-vh-100 d-flex align-items-center justify-content-center p-4">
-            <div class="w-100" style="max-width: 900px;">
+<div class="container py-5">
 
-                  <!-- Heading -->
-                  <div class="text-center mb-5">
-                        <h2 class="mb-1" style="color:#111827;">Select Company</h2>
-                        <p style="color:#6b7280;">Choose a company to manage or add a new one</p>
-                  </div>
+    <!-- Heading -->
+    <div class="text-center mb-5">
+        <h2 class="mb-1">Select Company</h2>
+        <p class="text-muted">Choose a company to manage or add a new one</p>
+    </div>
 
-                  <!-- COMPANY LIST -->
-                  <div class="mb-4">
+    <!-- Company List -->
+    <div id="companyList">
+        @include('company.components.company_table', ['companies' => $companies])
+    </div>
 
-                        <!-- Repeatable Company Card -->
-                        <div class="company-card p-4 mb-3">
-                              <div class="d-flex align-items-center justify-content-between">
+    <!-- Add New Company Button -->
+    <button class="btn btn-blue w-100 mt-3" data-bs-toggle="modal" data-bs-target="#companyModal">
+        <i class="fas fa-plus"></i> Add New Company
+    </button>
 
-                                    <div class="d-flex align-items-center gap-3 flex-grow-1">
-                                          <div class="icon-box">
-                                                <i class="fas fa-building" style="font-size: 1.2rem; color: #2563eb;"></i>
-                                          </div>
+</div>
 
-                                          <div class="flex-grow-1">
-                                                <div class="company-title">Acme Corporation</div>
-                                                <div class="company-sub">
-                                                      142 customers • 487 invoices • Created 2024-01-15
-                                                </div>
-                                          </div>
-                                    </div>
+<!-- Modal -->
+@include('company.components.company_form')
 
-                                    <div class="d-flex gap-2">
-                                          <a href="/dashboard" class="btn btn-blue px-3">Open Workspace</a>
-                                          <a class="px-3" href="#" data-bs-toggle="modal" data-bs-target="#addCompanyModal" style="margin-top:5px;">
-                                                <i class="fas fa-edit" style="color: blue;"></i>
-                                          </a>
-                                          <a class="px-3" href="#" data-bs-toggle="modal" data-bs-target="#deleteCompanyModal" style="margin-top:5px;">
-                                                <i class="fas fa-trash" style="color: red;"></i>
-                                          </a>
-                                    </div>
+<!-- JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-                              </div>
-                        </div>
+<script>
+    $.ajaxSetup({ headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')} });
 
-                        <!-- Repeat 2 -->
-                        <div class="company-card p-4 mb-3">
-                              <div class="d-flex align-items-center justify-content-between">
+    // CREATE
+    $('#createCompanyBtn').click(function(e){
+        e.preventDefault();
+        let form = $('#companyForm');
+        $.ajax({
+            url: "{{ url('/company') }}",
+            type: "POST",
+            data: form.serialize(),
+            success: function(response){
+                form[0].reset();
+                $('#companyModal').modal('hide');
+                $('#companyList').load(location.href + " #companyList>*","");
+                toastr.success(response.success);
+            },
+            error: function(xhr){
+                $('.error-text').text('');
+                $.each(xhr.responseJSON.errors, function(key,value){
+                    $('#error_'+key).text(value[0]);
+                });
+            }
+        });
+    });
 
-                                    <div class="d-flex align-items-center gap-3 flex-grow-1">
-                                          <div class="icon-box">
-                                          <i class="fas fa-building" style="font-size: 1.2rem; color: #2563eb;"></i>
-                                          </div>
+    // EDIT
+    $(document).on('click', '.editCompanyBtn', function(){
+        let id = $(this).data('id');
+        $.get('/company/'+id+'/edit', function(data){
+            $('#company_id').val(data.id);
+            $('#name').val(data.name);
+            $('#email').val(data.email);
+            $('#phone').val(data.phone);
+            $('#createCompanyBtn').hide();
+            $('#updateCompanyBtn').show();
+            $('#companyModal').modal('show');
+        });
+    });
 
-                                          <div class="flex-grow-1">
-                                                <div class="company-title">Global Enterprises</div>
-                                                <div class="company-sub">
-                                                      98 customers • 325 invoices • Created 2024-03-22
-                                                </div>
-                                          </div>
-                                    </div>
+    // UPDATE
+    $('#updateCompanyBtn').click(function(e){
+        e.preventDefault();
+        let id = $('#company_id').val();
+        let form = $('#companyForm');
+        $.ajax({
+            url: '/company/'+id,
+            type: 'PUT',
+            data: form.serialize(),
+            success: function(response){
+                form[0].reset();
+                $('#companyModal').modal('hide');
+                $('#companyList').load(location.href + " #companyList>*","");
+                toastr.success(response.success);
+                $('#createCompanyBtn').show();
+                $('#updateCompanyBtn').hide();
+            },
+            error: function(xhr){
+                $('.error-text').text('');
+                $.each(xhr.responseJSON.errors, function(key,value){
+                    $('#error_'+key).text(value[0]);
+                });
+            }
+        });
+    });
 
-                                    <div class="d-flex gap-2">
-                                          <a href="/dashboard" class="btn btn-blue px-3">Open Workspace</a>
-                                          <a class="px-3" href="#" data-bs-toggle="modal" data-bs-target="#addCompanyModal" style="margin-top:5px;">
-                                                <i class="fas fa-edit" style="color: blue;"></i>
-                                          </a>
-                                          <a class="px-3" href="#" data-bs-toggle="modal" data-bs-target="#deleteCompanyModal" style="margin-top:5px;">
-                                                <i class="fas fa-trash" style="color: red;"></i>
-                                          </a>
-                                    </div>
+    // DELETE
+    $(document).on('click', '.deleteCompanyBtn', function(){
+        if(confirm('Are you sure you want to delete this company?')){
+            let id = $(this).data('id');
+            $.ajax({
+                url: '/company/'+id,
+                type: 'DELETE',
+                success: function(response){
+                    $('#companyList').load(location.href + " #companyList>*","");
+                    toastr.success(response.success);
+                }
+            });
+        }
+    });
 
-                              </div>
-                        </div>
-
-                        <!-- Repeat 3 -->
-                        <div class="company-card p-4 mb-3">
-                              <div class="d-flex align-items-center justify-content-between">
-
-                                    <div class="d-flex align-items-center gap-3 flex-grow-1">
-                                          <div class="icon-box">
-                                          <i class="fas fa-building" style="font-size: 1.2rem; color: #2563eb;"></i>
-                                          </div>
-
-                                          <div class="flex-grow-1">
-                                                <div class="company-title">Tech Solutions Inc</div>
-                                                <div class="company-sub">
-                                                      203 customers • 612 invoices • Created 2024-05-10
-                                                </div>
-                                          </div>
-                                    </div>
-
-                                    <div class="d-flex gap-2">
-                                          <a href="/dashboard" class="btn btn-blue px-3">Open Workspace</a>
-                                          <a class="px-3" href="#" data-bs-toggle="modal" data-bs-target="#addCompanyModal" style="margin-top:5px;">
-                                                <i class="fas fa-edit" style="color: blue;"></i>
-                                          </a>
-                                          <a class="px-3" href="#" data-bs-toggle="modal" data-bs-target="#deleteCompanyModal" style="margin-top:5px;">
-                                                <i class="fas fa-trash" style="color: red;"></i>
-                                          </a>
-                                    </div>
-
-                              </div>
-                        </div>
-
-                  </div>
-
-                  <!-- ADD NEW COMPANY BUTTON -->
-                  <button class="btn btn-blue w-100" data-bs-toggle="modal" data-bs-target="#addCompanyModal">
-                        <i class="fas fa-plus" style="color: #fff;"></i>
-                        Add New Company
-                  </button>
-
-                  <!-- INCLUDE MODAL -->
-                  @include('company/components.company_form')
-
-            </div>
-      </div>
-
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    // Reset modal on close
+    $('#companyModal').on('hidden.bs.modal', function () {
+        $('#companyForm')[0].reset();
+        $('.error-text').text('');
+        $('#createCompanyBtn').show();
+        $('#updateCompanyBtn').hide();
+    });
+</script>
 
 </body>
-
 </html>
