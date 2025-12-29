@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Controllers\ErpSyncLogController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -28,22 +32,22 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/company', function () {
     return view('company.index');
 });
-Route::get('/dashboard', function () {
-    return view('dashboard');
-});
-Route::get('/customer', function () {
-    return view('customer.index');
-});
-Route::get('/customer/detail', function () {
-    return view('customer.detail');
-});
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// });
+// Route::get('/customer', function () {
+//     return view('customer.index');
+// });
+// Route::get('/customer/detail', function () {
+//     return view('customer.detail');
+// });
 
-Route::get('/invoice', function () {
-    return view('invoice.index');
-});
-Route::get('/invoice/detail', function () {
-    return view('invoice.detail');
-});
+// Route::get('/invoice', function () {
+//     return view('invoice.index');
+// });
+// Route::get('/invoice/detail', function () {
+//     return view('invoice.detail');
+// });
 
 Route::get('/whatsapp', function () {
     return view('whatsapp.index');
@@ -59,6 +63,19 @@ Route::get('/setting', function () {
 
 //dynamic
 Route::middleware(['auth'])->group(function () {
+    //ery syn
+    Route::get('/erp-sync', [ErpSyncLogController::class, 'index'])->name('erp.sync');
+    Route::post('/erp-sync/run', [ErpSyncLogController::class, 'sync'])->name('erp.sync.run');
+    //dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    // Customers
+    Route::get('/customer', [CustomerController::class, 'index']);
+    Route::get('/customer/detail/{customer_code}', [CustomerController::class, 'detail']);
+
+    // Invoices
+    Route::get('/invoice', [InvoiceController::class, 'index']);
+    Route::get('/invoice/detail/{invoice_id}', [InvoiceController::class, 'detail']);
+
     //company
     Route::get('/company', [CompanyController::class, 'index']);
     Route::post('/company', [CompanyController::class, 'store']);

@@ -13,7 +13,7 @@
                         <i class="fas fa-dollar-sign"></i>
                   </div>
                   <small class="text-muted">Total Receivables</small>
-                  <h5>$423,500</h5>
+                  <h5>${{ number_format($total_receivables) }}</h5>
             </div>
       </div>
 
@@ -24,7 +24,7 @@
                         <i class="fas fa-exclamation-triangle"></i>
                   </div>
                   <small class="text-muted">Overdue Amount</small>
-                  <h5 class="text-danger">$145,000</h5>
+                  <h5 class="text-danger">${{ number_format($overdue_amount) }}</h5>
             </div>
       </div>
 
@@ -35,7 +35,7 @@
                         <i class="fas fa-users"></i>
                   </div>
                   <small class="text-muted">Total Customers</small>
-                  <h5>142</h5>
+                  <h5>{{ $total_customers }}</h5>
             </div>
       </div>
 
@@ -46,7 +46,7 @@
                         <i class="fas fa-file-invoice"></i>
                   </div>
                   <small class="text-muted">Overdue Invoices</small>
-                  <h5>32</h5>
+                  <h5>{{ $overdue_invoices }}</h5>
             </div>
       </div>
 </div>

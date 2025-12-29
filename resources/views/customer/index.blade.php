@@ -12,51 +12,6 @@
         </div>
     </div>
 
-    @php
-        $customers = [
-            [
-                'id' => 1,
-                'name' => 'Acme Industries',
-                'phone' => '+1 555-0101',
-                'balance' => 45000,
-                'overdue' => 45000,
-                'invoices' => 2,
-            ],
-            [
-                'id' => 2,
-                'name' => 'TechCorp Solutions',
-                'phone' => '+1 555-0102',
-                'balance' => 89000,
-                'overdue' => 0,
-                'invoices' => 3,
-            ],
-            [
-                'id' => 3,
-                'name' => 'Global Retail Co.',
-                'phone' => '+1 555-0103',
-                'balance' => 78000,
-                'overdue' => 78000,
-                'invoices' => 1,
-            ],
-            [
-                'id' => 4,
-                'name' => 'Smart Systems Inc',
-                'phone' => '+1 555-0104',
-                'balance' => 23000,
-                'overdue' => 23000,
-                'invoices' => 4,
-            ],
-            [
-                'id' => 5,
-                'name' => 'Digital Marketing Ltd',
-                'phone' => '+1 555-0105',
-                'balance' => 99600,
-                'overdue' => 99600,
-                'invoices' => 2,
-            ],
-        ];
-    @endphp
-
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -95,9 +50,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <!-- <a class="btn btn-outline-secondary btn-sm" href="{{ url('customer/detail/' . $customer['id']) }}">View</a> -->
-                                    <a class="btn btn-outline-secondary btn-sm"
-                                        href="{{ url('customer/detail/') }}">View</a>
+                                    <a class="btn btn-outline-secondary btn-sm" href="{{ url('customer/detail/' . $customer['customer_code']) }}">View</a>
                                 </td>
                             </tr>
                         @endforeach

@@ -23,19 +23,19 @@
     <div class="col-lg-4">
         <div class="card p-3">
             <small class="text-muted">Total Balance</small>
-            <h5>$125,000</h5>
+            <h5>${{ number_format($customer['balance']??0) }}</h5>
         </div>
     </div>
     <div class="col-lg-4">
         <div class="card p-3">
             <small class="text-muted">Overdue Amount</small>
-            <h5 class="text-danger">$45,000</h5>
+            <h5 class="text-danger">${{ number_format($customer['overdue']??0) }}</h5>
         </div>
     </div>
     <div class="col-lg-4">
         <div class="card p-3">
             <small class="text-muted">WhatsApp Number</small>
-            <h5>+1 555-0101</h5>
+            <h5>{{ $customer['phone']??'' }}</h5>
         </div>
     </div>
 </div>
@@ -58,21 +58,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php
-                        $invoices = [
-                            ['number'=>'INV-1234','date'=>'2025-10-15','dueDate'=>'2025-11-15','amount'=>45000,'status'=>'Overdue','daysOverdue'=>4],
-                            ['number'=>'INV-1198','date'=>'2025-11-01','dueDate'=>'2025-12-01','amount'=>80000,'status'=>'Paid','daysOverdue'=>0],
-                        ];
-                    @endphp
-                    @foreach($invoices as $inv)
+                    @foreach($customer['invoices'] as $inv)
                     <tr>
                         <td>{{ $inv['number'] }}</td>
-                        <td>{{ $inv['date'] }}</td>
-                        <td>{{ $inv['dueDate'] }}</td>
+                        <td>{{ $inv['issue_date'] }}</td>
+                        <td>{{ $inv['due_date'] }}</td>
                         <td>${{ number_format($inv['amount']) }}</td>
                         <td>
                             @if($inv['status'] == 'Overdue')
-                                <span class="badge bg-danger">Overdue ({{ $inv['daysOverdue'] }} days)</span>
+                                <span class="badge bg-danger">Overdue ({{ $inv['days_overdue'] }} days)</span>
                             @else
                                 <span class="badge bg-success">{{ $inv['status'] }}</span>
                             @endif

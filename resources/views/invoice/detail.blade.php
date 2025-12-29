@@ -12,7 +12,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h3 class="mb-1">Invoice INV-1234</h3>
+            <h3 class="mb-1">Invoice # {{$invoice['number']}}</h3>
             <p class="text-muted mb-0">Invoice details and reminder history</p>
         </div>
         <div class="d-flex align-items-center text-success small">
@@ -33,32 +33,32 @@
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Customer:</span>
-                        <span class="fw-semibold">Acme Industries</span>
+                        <span class="fw-semibold">{{$invoice['customer']}}</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Invoice Date:</span>
-                        <span class="fw-semibold">2025-10-15</span>
+                        <span class="fw-semibold">{{$invoice['issue_date']}}</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Due Date:</span>
-                        <span class="fw-semibold">2025-11-15</span>
+                        <span class="fw-semibold">{{$invoice['due_date']}}</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Amount:</span>
-                        <span class="fw-semibold">$45,000</span>
+                        <span class="fw-semibold">${{number_format($invoice['amount']??0)}}</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Days Overdue:</span>
-                        <span class="badge bg-danger-subtle text-danger">4 days</span>
+                        <span class="badge bg-danger-subtle text-danger">{{$invoice['days_overdue']}} days</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2">
                         <span class="text-muted">Status:</span>
-                        <span class="badge bg-danger-subtle text-danger">Overdue</span>
+                        <span class="badge bg-danger-subtle text-danger">{{$invoice['status']}}</span>
                     </div>
 
                 </div>
@@ -75,22 +75,22 @@
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Amount Due:</span>
-                        <span class="fw-semibold">$45,000</span>
+                        <span class="fw-semibold">${{number_format($invoice['balance']??0)}}</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Amount Paid:</span>
-                        <span class="fw-semibold">$0</span>
+                        <span class="fw-semibold">${{number_format($invoice['amount_paid']??0)}}</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2 border-bottom">
                         <span class="text-muted">Balance:</span>
-                        <span class="fw-semibold text-danger">$45,000</span>
+                        <span class="fw-semibold text-danger">${{number_format($invoice['balance']??0)}}</span>
                     </div>
 
                     <div class="d-flex justify-content-between py-2">
                         <span class="text-muted">Payment Method:</span>
-                        <span class="fw-semibold">Bank Transfer</span>
+                        <span class="fw-semibold">{{$invoice['payment_method']}}</span>
                     </div>
 
                 </div>

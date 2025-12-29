@@ -14,65 +14,6 @@
         </div>
     </div>
 
-    @php
-        $invoices = [
-            [
-                'id' => 1,
-                'number' => 'INV-1234',
-                'customer' => 'Acme Industries',
-                'date' => '2025-10-15',
-                'dueDate' => '2025-11-15',
-                'amount' => 45000,
-                'status' => 'Overdue',
-                'daysOverdue' => 4,
-                'autoReminders' => 2,
-            ],
-            [
-                'id' => 2,
-                'number' => 'INV-1235',
-                'customer' => 'TechCorp Solutions',
-                'date' => '2025-11-01',
-                'dueDate' => '2025-12-01',
-                'amount' => 89000,
-                'status' => 'Paid',
-                'daysOverdue' => 0,
-                'autoReminders' => 0,
-            ],
-            [
-                'id' => 3,
-                'number' => 'INV-1236',
-                'customer' => 'Global Retail Co.',
-                'date' => '2025-10-01',
-                'dueDate' => '2025-11-01',
-                'amount' => 78000,
-                'status' => 'Overdue',
-                'daysOverdue' => 18,
-                'autoReminders' => 3,
-            ],
-            [
-                'id' => 4,
-                'number' => 'INV-1237',
-                'customer' => 'Smart Systems Inc',
-                'date' => '2025-09-15',
-                'dueDate' => '2025-10-15',
-                'amount' => 23000,
-                'status' => 'Overdue',
-                'daysOverdue' => 35,
-                'autoReminders' => 5,
-            ],
-            [
-                'id' => 5,
-                'number' => 'INV-1238',
-                'customer' => 'Digital Marketing Ltd',
-                'date' => '2025-11-10',
-                'dueDate' => '2025-12-10',
-                'amount' => 99600,
-                'status' => 'Pending',
-                'daysOverdue' => 0,
-                'autoReminders' => 0,
-            ],
-        ];
-    @endphp
 
     <div class="card">
         <div class="card-body">
@@ -92,24 +33,24 @@
                     </thead>
 
                     <tbody>
-                        @foreach ($invoices as $invoice)
+                        @foreach ($invoices as $item)
                             <tr>
-                                <td>{{ $invoice['number'] }}</td>
+                                <td>{{ $item['number'] }}</td>
 
                                 <td class="d-none d-lg-table-cell fw-semibold">
-                                    {{ $invoice['customer'] }}
+                                    {{ $item['customer'] }}
                                 </td>
 
                                 <td class="d-none d-sm-table-cell text-muted">
-                                    {{ $invoice['dueDate'] }}
+                                    {{ $item['due_date'] }}
                                 </td>
 
-                                <td>${{ number_format($invoice['amount']) }}</td>
+                                <td>${{ number_format($item['amount']) }}</td>
 
                                 <td>
-                                    @if ($invoice['status'] === 'Overdue')
-                                        <span class="badge bg-danger">Overdue ({{ $invoice['daysOverdue'] }}d)</span>
-                                    @elseif($invoice['status'] === 'Paid')
+                                    @if ($item['status'] === 'Overdue')
+                                        <span class="badge bg-danger">Overdue ({{ $item['daysOverdue']??0 }}days)</span>
+                                    @elseif($item['status'] === 'Paid')
                                         <span class="badge bg-success">Paid</span>
                                     @else
                                         <span class="badge bg-primary">Pending</span>
@@ -117,18 +58,19 @@
                                 </td>
 
                                 <td class="d-none d-md-table-cell">
-                                    @if ($invoice['autoReminders'] > 0)
+                                    {{-- @if ($item['autoReminders'] > 0)
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-bolt text-primary me-1"></i>
-                                            <span>{{ $invoice['autoReminders'] }} sent</span>
+                                            <span>{{ $item['autoReminders'] }} sent</span>
                                         </div>
                                     @else
                                         <span class="text-muted">-</span>
-                                    @endif
+                                    @endif --}}
+                                    0
                                 </td>
 
                                 <td>
-                                    <a href="{{ url('invoice/detail/') }}" class="btn btn-outline-secondary btn-sm">
+                                    <a href="{{ url('invoice/detail/'.$item['id']) }}" class="btn btn-outline-secondary btn-sm">
                                         View
                                     </a>
                                 </td>
