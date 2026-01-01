@@ -4,69 +4,99 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Customer;
+use Carbon\Carbon;
 
 class CustomerController extends Controller
 {
+    /**
+     * Display a list of customers with balances and overdue amounts.
+     */
     public function index()
     {
-        $company_id = Auth::user()->company_id;
+        $company_id = Auth::user()->company->id;
 
         $customers = Customer::with(['invoices' => function ($q) {
-            $q->select('id', 'customer_id', 'total_amount', 'paid_amount', 'due_date');
+            $q->select(
+                'id',
+                'customer_id',
+                'document_number',
+                'issue_date',
+                'due_date',
+                'total_amount',
+                'balance_amount'
+            );
         }])
             ->where('company_id', $company_id)
             ->get()
             ->map(function ($customer) {
-                $balance = $customer->invoices->sum(fn($inv) => $inv->total_amount - $inv->paid_amount);
-                $overdue  = $customer->invoices->filter(fn($inv) => ($inv->total_amount - $inv->paid_amount) > 0 && $inv->due_date < now())->sum(fn($inv) => $inv->total_amount - $inv->paid_amount);
+                $balance = $customer->invoices->sum(fn($inv) => $inv->balance_amount ?? 0);
+                $overdue = $customer->invoices->filter(fn($inv) =>
+                    ($inv->balance_amount ?? 0) > 0 && $inv->due_date && $inv->due_date < now()
+                )->sum(fn($inv) => $inv->balance_amount ?? 0);
+
                 return [
+                    'id' => $customer->id,
                     'customer_code' => $customer->code,
-                    'name' => $customer->name,
+                    'name' => !empty($customer->name)?$customer->name:$customer->commercial_name,
                     'phone' => $customer->phone,
                     'balance' => $balance,
                     'overdue' => $overdue,
-                    'invoices' => $customer->invoices->count(),
+                    'invoices_count' => $customer->invoices->count(),
                 ];
             });
-
         return view('customer.index', compact('customers'));
     }
 
-    public function detail($customer_code)
+    /**
+     * Display customer detail with invoices.
+     */
+    public function detail($customer_id)
     {
-        $company_id = Auth::user()->company->company_id;
+        $company_id = Auth::user()->company->id;
 
         $customer = Customer::with(['invoices' => function ($q) {
-            $q->select('id', 'customer_id', 'number', 'issue_date', 'due_date', 'total_amount', 'paid_amount')
-                ->orderBy('issue_date', 'desc');
-        }])->where('company_id', $company_id)
-            ->where('code', $customer_code)
-            ->firstOrFail();
+            $q->select(
+                'id',
+                'customer_id',
+                'document_number',
+                'issue_date',
+                'due_date',
+                'total_amount',
+                'balance_amount'
+            )->orderBy('issue_date', 'desc');
+        }])
+        ->where('company_id', $company_id)
+        ->where('id', $customer_id)
+        ->firstOrFail();
 
-        $customerData = [
+        $customer = [
             'customer_code' => $customer->code,
-            'name' => $customer->name,
+            'name' => !empty($customer->name)?$customer->name:$customer->commercial_name,
             'phone' => $customer->phone,
-            'balance' => $customer->invoices->sum(fn($inv) => $inv->total_amount - $inv->paid_amount),
-            'overdue' => $customer->invoices->filter(fn($inv) => ($inv->total_amount - $inv->paid_amount) > 0 && $inv->due_date < now())->sum(fn($inv) => $inv->total_amount - $inv->paid_amount),
+            'balance' => $customer->invoices->sum(fn($inv) => $inv->balance_amount ?? 0),
+            'overdue' => $customer->invoices->filter(fn($inv) =>
+                ($inv->balance_amount ?? 0) > 0 && $inv->due_date && $inv->due_date < now()
+            )->sum(fn($inv) => $inv->balance_amount ?? 0),
             'invoices' => $customer->invoices->map(function ($inv) {
-                $status = ($inv->total_amount - $inv->paid_amount) > 0 && $inv->due_date < now()
-                    ? 'Overdue'
-                    : 'Paid';
-                $days_overdue = $status === 'Overdue'
-                    ? now()->diffInDays($inv->due_date)
+                $balance = $inv->balance_amount ?? 0;
+                $due_date = $inv->due_date;
+                $status = $balance <= 0 ? 'Paid' : ($due_date && $due_date < now() ? 'Overdue' : 'Pending');
+                $days_overdue = $status === 'Overdue' && $due_date
+                    ? now()->diffInDays($due_date)
                     : 0;
+
                 return [
-                    'number' => $inv->number,
-                    'issue_date' => $inv->issue_date->format('d M Y'),
-                    'due_date' => $inv->due_date->format('d M Y'),
-                    'amount' => $inv->total_amount - $inv->paid_amount,
+                    'document_number' => $inv->document_number,
+                    'issue_date' => $inv->issue_date?->format('d M Y') ?? '-',
+                    'due_date' => $inv->due_date?->format('d M Y') ?? '-',
+                    'amount' => $inv->total_amount ?? 0,
+                    'balance' => $balance,
                     'status' => $status,
                     'days_overdue' => $days_overdue,
                 ];
             })->toArray(),
         ];
 
-        return view('customer.detail', ['customer' => $customerData]);
+        return view('customer.detail', compact('customer'));
     }
 }
