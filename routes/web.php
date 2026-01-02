@@ -57,9 +57,6 @@ Route::get('/erp-sync', function () {
     return view('erp_sync.index');
 });
 
-Route::get('/setting', function () {
-    return view('setting');
-});
 
 //dynamic
 Route::middleware(['auth'])->group(function () {
@@ -94,4 +91,12 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
+
+    Route::get('/setting', [CompanyController::class, 'settings'])->name('settings');
+    Route::post('/setting/company', [CompanyController::class, 'updateCompany'])->name('settings.update.company');
+    Route::post('/setting/whatsapp', [CompanyController::class, 'updateWhatsApp'])->name('settings.update.whatsapp');
+    Route::post('/setting/erp', [CompanyController::class, 'updateERP'])->name('settings.update.erp');
+    Route::post('/setting/reminders', [CompanyController::class, 'updateReminders'])->name('settings.update.reminders');
+    Route::post('/setting/toggle-whatsapp/{company}', [CompanyController::class, 'toggleWhatsApp'])->name('settings.toggle.whatsapp');
+    Route::post('/setting/toggle-erp/{company}', [CompanyController::class, 'toggleERP'])->name('settings.toggle.erp');
 });

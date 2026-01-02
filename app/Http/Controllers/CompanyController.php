@@ -190,4 +190,132 @@ class CompanyController extends Controller
 
         return redirect('/login')->with('error', 'Unable to restore admin session.');
     }
+
+    public function settings()
+    {
+        // Auth user ka company_id
+        $companyId = Auth::user()->company_id;
+
+        // Company ka data fetch karna
+        $company = Company::findOrFail($companyId);
+
+        return view('setting', compact('company'));
+    }
+
+    // CompanyController.php
+    public function updateCompany(Request $request)
+    {
+        $company = Company::findOrFail(Auth::user()->company_id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:50',
+            'website' => 'nullable|string|max:255',
+        ]);
+
+        $company->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'website' => $request->website,
+            'updatedby_id' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Company Information updated successfully.');
+    }
+
+    public function updateWhatsApp(Request $request)
+    {
+        $company = Company::findOrFail(Auth::user()->company_id);
+
+        $request->validate([
+            'green_api_instance' => 'required|string|max:255',
+            'green_api_token' => 'required|string|max:255',
+            'green_webhook_url' => 'nullable|url|max:255',
+        ]);
+
+        $company->update([
+            'green_api_instance' => $request->green_api_instance,
+            'green_api_token' => $request->green_api_token,
+            'green_webhook_url' => $request->green_webhook_url,
+            'updatedby_id' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'WhatsApp Settings updated successfully.');
+    }
+
+    public function updateERP(Request $request)
+    {
+        $company = Company::findOrFail(Auth::user()->company_id);
+
+        $request->validate([
+            'erp_system' => 'required|string|max:100',
+            'erp_api_base_url' => 'required|url|max:255',
+            'erp_api_token' => 'required|string|max:255',
+            'erp_auto_sync' => 'required|integer',
+        ]);
+
+        $company->update([
+            'erp_system' => $request->erp_system,
+            'erp_api_base_url' => $request->erp_api_base_url,
+            'erp_api_token' => $request->erp_api_token,
+            'erp_auto_sync' => $request->erp_auto_sync,
+            'updatedby_id' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'ERP Settings updated successfully.');
+    }
+
+    public function updateReminders(Request $request)
+    {
+        $company = Company::findOrFail(Auth::user()->company_id);
+
+        $request->validate([
+            'before_due' => 'required|integer',
+            'on_due' => 'required|string',
+            'after_due_1' => 'required|integer',
+            'after_due_2' => 'required|integer',
+            'max_reminders' => 'required|integer',
+        ]);
+
+        $company->update([
+            'before_due' => $request->before_due,
+            'on_due' => $request->on_due,
+            'after_due_1' => $request->after_due_1,
+            'after_due_2' => $request->after_due_2,
+            'max_reminders' => $request->max_reminders,
+            'updatedby_id' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Reminder Rules updated successfully.');
+    }
+
+    public function toggleWhatsApp($company_id)
+    {
+        $company = Company::findOrFail($company_id);
+        if($company->green_active == 1){
+            $company->green_active = 0;
+        }else{
+            $company->green_active = 1;
+        }
+        $company->updatedby_id = Auth::id();
+        $company->update();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function toggleERP($company_id)
+    {
+        $company = Company::findOrFail($company_id);
+        if($company->erp_active == 1){
+            $company->erp_active = 0;
+        }else{
+            $company->erp_active = 1;
+        }
+        $company->updatedby_id = Auth::id();
+        $company->update();
+
+        return response()->json(['success' => true]);
+    }
 }
