@@ -108,7 +108,7 @@ class CompanyController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:companies,email,' . $id,
             'phone' => 'required|string|max:20',
-            'company_id' => 'required|integer|max:20',
+            'company_id' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
