@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Customer;
+use App\Models\InvoiceReminderLog;
 use Carbon\Carbon;
 
 class CustomerController extends Controller
@@ -30,14 +31,14 @@ class CustomerController extends Controller
             ->get()
             ->map(function ($customer) {
                 $balance = $customer->invoices->sum(fn($inv) => $inv->balance_amount ?? 0);
-                $overdue = $customer->invoices->filter(fn($inv) =>
-                    ($inv->balance_amount ?? 0) > 0 && $inv->due_date && $inv->due_date < now()
+                $overdue = $customer->invoices->filter(
+                    fn($inv) => ($inv->balance_amount ?? 0) > 0 && $inv->due_date && $inv->due_date < now()
                 )->sum(fn($inv) => $inv->balance_amount ?? 0);
 
                 return [
                     'id' => $customer->id,
                     'customer_code' => $customer->code,
-                    'name' => !empty($customer->name)?$customer->name:$customer->commercial_name,
+                    'name' => !empty($customer->name) ? $customer->name : $customer->commercial_name,
                     'phone' => $customer->phone,
                     'balance' => $balance,
                     'overdue' => $overdue,
@@ -65,17 +66,17 @@ class CustomerController extends Controller
                 'balance_amount'
             )->orderBy('issue_date', 'desc');
         }])
-        ->where('company_id', $company_id)
-        ->where('id', $customer_id)
-        ->firstOrFail();
+            ->where('company_id', $company_id)
+            ->where('id', $customer_id)
+            ->firstOrFail();
 
         $customer = [
             'customer_code' => $customer->code,
-            'name' => !empty($customer->name)?$customer->name:$customer->commercial_name,
+            'name' => !empty($customer->name) ? $customer->name : $customer->commercial_name,
             'phone' => $customer->phone,
             'balance' => $customer->invoices->sum(fn($inv) => $inv->balance_amount ?? 0),
-            'overdue' => $customer->invoices->filter(fn($inv) =>
-                ($inv->balance_amount ?? 0) > 0 && $inv->due_date && $inv->due_date < now()
+            'overdue' => $customer->invoices->filter(
+                fn($inv) => ($inv->balance_amount ?? 0) > 0 && $inv->due_date && $inv->due_date < now()
             )->sum(fn($inv) => $inv->balance_amount ?? 0),
             'invoices' => $customer->invoices->map(function ($inv) {
                 $balance = $inv->balance_amount ?? 0;
@@ -97,6 +98,29 @@ class CustomerController extends Controller
             })->toArray(),
         ];
 
-        return view('customer.detail', compact('customer'));
+        // Fetch logs for this customer only
+        $history = InvoiceReminderLog::where('customer_id', $customer_id)
+            ->orderByDesc('sent_at')
+            ->limit(50)
+            ->get()
+            ->map(function ($log) {
+
+                $message = '';
+                if ($log->request_payload) {
+                    $payload = json_decode($log->request_payload, true);
+                    $message = $payload['message'] ?? '';
+                }
+
+                // Determine type
+                $type = $log->message_sent ? 'sent' : 'received';
+
+                return [
+                    'message' => $message,
+                    'date' => $log->sent_at ? $log->sent_at->format('Y-m-d H:i') : '-',
+                    'type' => $type,
+                ];
+            });
+
+        return view('customer.detail', compact('customer','history'));
     }
 }

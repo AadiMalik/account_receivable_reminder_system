@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomerInvoice;
+use App\Models\InvoiceReminderLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,7 +35,7 @@ class InvoiceController extends Controller
         $invoice = [
             'id' => $invoice->id,
             'document_number' => $invoice->document_number,
-            'customer' =>!empty($invoice->customer->name)?$invoice->customer->name:$invoice->customer->commercial_name,
+            'customer' => !empty($invoice->customer->name) ? $invoice->customer->name : $invoice->customer->commercial_name,
             'issue_date' => $invoice->issue_date?->format('d M Y'),
             'due_date' => $invoice->due_date?->format('d M Y'),
             'amount' => $invoice->total_amount,
@@ -45,7 +46,26 @@ class InvoiceController extends Controller
             'status' => $status,
             'auto_reminders_sent' => $invoice->auto_reminders_sent ?? 0, // if exists
         ];
-        $reminderHistory=[];
+        // Fetch reminder logs for this invoice
+        $logs = InvoiceReminderLog::where('customer_invoice_id', $invoice_id)
+            ->orderByDesc('sent_at')
+            ->get();
+
+        // Map to blade-friendly array
+        $reminderHistory = $logs->map(function ($log) {
+
+            // Rule = reminder_type
+            $rule = ucfirst(str_replace('_', ' ', $log->reminder_type));
+
+            // Status
+            $status = $log->message_sent ? 'Read' : 'Pending';
+
+            return [
+                'date' => $log->sent_at ? $log->sent_at->format('d M, Y h:i A') : '-',
+                'rule' => $rule,
+                'status' => $status,
+            ];
+        })->toArray();
 
         return view('invoice.detail', compact('invoice', 'reminderHistory'));
     }

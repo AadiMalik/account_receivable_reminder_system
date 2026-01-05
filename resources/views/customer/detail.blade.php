@@ -58,7 +58,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($customer['invoices'] as $inv)
+                    @if(isset($customer['invoices']))
+                    @foreach($customer['invoices'] as $inv)
                         <tr>
                             <td>{{ $inv['document_number'] }}</td>
                             <td>{{ $inv['issue_date'] }}</td>
@@ -72,11 +73,12 @@
                                 @endif
                             </td>
                         </tr>
-                    @empty
+                        @endforeach
+                    @else
                         <tr>
                             <td colspan="5" class="text-center text-muted">No invoices found</td>
                         </tr>
-                    @endforelse
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -89,14 +91,7 @@
         <strong>WhatsApp Communication History</strong>
     </div>
     <div class="card-body">
-        @php
-            $whatsappHistory = [
-                ['message'=>'Auto reminder sent for INV-1234 (4 days overdue)','date'=>'2025-11-19 10:30','type'=>'sent'],
-                ['message'=>'Customer replied: Payment will be processed by Friday','date'=>'2025-11-19 10:45','type'=>'received'],
-                ['message'=>'Auto reminder sent for INV-1234 (due in 1 day)','date'=>'2025-11-14 09:00','type'=>'sent'],
-            ];
-        @endphp
-        @foreach($whatsappHistory as $item)
+        @foreach($history as $item)
             <div class="d-flex align-items-start gap-2 pb-2 mb-2 border-bottom">
                 <div class="{{ $item['type']=='sent' ? 'bg-primary bg-opacity-10 text-primary' : 'bg-success bg-opacity-10 text-success' }} rounded-circle p-2 mt-1">
                     <i class="fas fa-comment" style="width: 25px; text-align: center;"></i>

@@ -53,4 +53,8 @@ class CustomerInvoice extends Model
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
+    public function reminderLogs()
+    {
+        return $this->hasMany(InvoiceReminderLog::class, 'customer_invoice_id');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Customer;
 use App\Models\CustomerInvoice;
+use App\Models\InvoiceReminderLog;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -39,13 +40,25 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($inv) {
                 return [
-                    'customer' => !empty($inv->customer->name)?$inv->customer->name:$inv->customer->commercial_name,
+                    'customer' => !empty($inv->customer->name) ? $inv->customer->name : $inv->customer->commercial_name,
                     'amount'   => $inv->amount,
                     'days'     => $inv->days,
                 ];
             });
 
-        $recent_activities = [];
+        $recent_activities = InvoiceReminderLog::with('customer')
+            ->where('company_id', $company_id)
+            ->orderByDesc('sent_at')
+            ->limit(5)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'customer' => $log->customer?->name ?? $log->customer?->commercial_name ?? 'Unknown',
+                    'message'  => $log->request_payload ? json_decode($log->request_payload, true)['message'] ?? '' : '',
+                    'time'     => $log->sent_at ? $log->sent_at->format('d M, Y h:i A') : '-',
+                    'type'     => $log->message_sent ? 'sent' : 'failed',
+                ];
+            });
 
         return view('dashboard', compact(
             'total_receivables',
