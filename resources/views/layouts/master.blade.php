@@ -111,12 +111,12 @@
     <!-- Mobile Bottom Navigation -->
     @php
     $mobileMenuItems = [
-        ['id' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'fas fa-tachometer-alt', 'url' => '/dashboard'],
-        ['id' => 'customers', 'label' => 'Customers', 'icon' => 'fas fa-users', 'url' => '/customer'],
-        ['id' => 'invoices', 'label' => 'Invoices', 'icon' => 'fas fa-file-invoice', 'url' => '/invoice'],
-        ['id' => 'whatsapp', 'label' => 'WhatsApp', 'icon' => 'fab fa-whatsapp', 'url' => '/whatsapp'],
-        ['id' => 'erp-sync', 'label' => 'Sync', 'icon' => 'fas fa-sync-alt', 'url' => '/erp-sync'],
-        ['id' => 'settings', 'label' => 'Settings', 'icon' => 'fas fa-cog', 'url' => '/setting'],
+    ['id' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'fas fa-tachometer-alt', 'url' => '/dashboard'],
+    ['id' => 'customers', 'label' => 'Customers', 'icon' => 'fas fa-users', 'url' => '/customer'],
+    ['id' => 'invoices', 'label' => 'Invoices', 'icon' => 'fas fa-file-invoice', 'url' => '/invoice'],
+    ['id' => 'whatsapp', 'label' => 'WhatsApp', 'icon' => 'fab fa-whatsapp', 'url' => '/whatsapp'],
+    ['id' => 'erp-sync', 'label' => 'Sync', 'icon' => 'fas fa-sync-alt', 'url' => '/erp-sync'],
+    ['id' => 'settings', 'label' => 'Settings', 'icon' => 'fas fa-cog', 'url' => '/setting'],
     ];
     $currentPage = $currentPage ?? 'dashboard';
     @endphp
@@ -125,7 +125,7 @@
         <div class="d-flex">
             @foreach($mobileMenuItems as $item)
             <a href="{{ $item['url'] }}"
-               class="btn d-flex flex-column align-items-center {{ $currentPage == $item['id'] ? 'active-nav' : 'text-secondary' }}">
+                class="btn d-flex flex-column align-items-center {{ $currentPage == $item['id'] ? 'active-nav' : 'text-secondary' }}">
                 <i class="{{ $item['icon'] }} fs-5"></i>
                 <span>{{ $item['label'] }}</span>
             </a>
@@ -141,8 +141,8 @@
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            $('.display').each(function () {
+        $(document).ready(function() {
+            $('.display').each(function() {
                 $(this).DataTable({
                     pageLength: 5,
                     lengthMenu: [5, 10, 25, 50],
@@ -154,6 +154,34 @@
             });
         });
     </script>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en', // aapki site ki original language
+                includedLanguages: 'en,ar,fr,de,es,ur',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+
+        // Wait for the Google Translate element to load
+        function triggerDefaultSpanish() {
+            var select = document.querySelector("#google_translate_element select");
+            if (select) {
+                select.value = "es"; // Spanish
+                select.dispatchEvent(new Event('change')); // trigger translation
+            } else {
+                setTimeout(triggerDefaultSpanish, 500); // retry if not loaded yet
+            }
+        }
+
+        window.addEventListener('load', function() {
+            triggerDefaultSpanish();
+        });
+    </script>
+
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 
     @stack('scripts')
 </body>

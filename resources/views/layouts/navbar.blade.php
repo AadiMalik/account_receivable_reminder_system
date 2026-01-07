@@ -14,6 +14,7 @@
 
             <!-- Right: Buttons -->
             <div class="d-flex gap-2 align-items-center">
+            <div id="google_translate_element"></div>
                   @if(session('admin_user_id')!==null)
                   <a href="{{ url('company/restore') }}" class="btn btn-outline-secondary btn-sm d-none d-sm-flex">
                         <i class="fas fa-sync-alt me-1" style="margin-top: 5px;"></i>
