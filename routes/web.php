@@ -73,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
 
     //whatsapp
     Route::get('/whatsapp', [InvoiceReminderLogController::class, 'index']);
+    Route::post('/whatsapp/send-message', [InvoiceReminderLogController::class, 'sendWhatsAppMessage']);
 
     //company
     Route::get('/company', [CompanyController::class, 'index']);
@@ -80,6 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/company/{id}/edit', [CompanyController::class, 'edit']);
     Route::put('/company/{id}', [CompanyController::class, 'update']);
     Route::delete('/company/{id}', [CompanyController::class, 'destroy']);
+    Route::get('/get-old-company-by-email/{email}', [CompanyController::class, 'oldCompanyByEmail']);
 
     Route::get('/company/{company}/login', [CompanyController::class, 'loginAsCompany']);
     Route::get('/company/restore', [CompanyController::class, 'restoreAdmin'])->name('company.restore');

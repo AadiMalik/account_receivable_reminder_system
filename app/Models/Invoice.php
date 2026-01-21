@@ -36,7 +36,6 @@ class Invoice extends Model
         'fel_address',
         'cancellation_date',
         'due_date',
-        'old_company_id',
         'createdby_id',
         'updatedby_id',
         'company_id',

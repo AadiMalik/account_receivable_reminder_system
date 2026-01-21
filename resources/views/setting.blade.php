@@ -62,15 +62,15 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="green_api_instance" class="form-label">API Instance <span class="text-danger">*</span></label>
+                        <label for="green_api_instance" class="form-label">Id Instance <span class="text-danger">*</span></label>
                         <input type="text" id="green_api_instance" name="green_api_instance" class="form-control" value="{{ old('green_api_instance', $company->green_api_instance) }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="green_api_token" class="form-label">API Token <span class="text-danger">*</span></label>
+                        <label for="green_api_token" class="form-label">API Token Instance <span class="text-danger">*</span></label>
                         <input type="text" id="green_api_token" name="green_api_token" class="form-control" value="{{ old('green_api_token', $company->green_api_token) }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="green_webhook_url" class="form-label">Webhook URL</label>
+                        <label for="green_webhook_url" class="form-label">API URL</label>
                         <input type="text" id="green_webhook_url" name="green_webhook_url" class="form-control" value="{{ old('green_webhook_url', $company->green_webhook_url) }}">
                     </div>
 
@@ -155,8 +155,8 @@
                     <div class="mb-3">
                         <label for="on_due" class="form-label">Send reminder on due date <span class="text-danger">*</span></label>
                         <select id="on_due" name="on_due" class="form-select" required>
-                            <option value="yes" {{ ($company->on_due ?? 'yes') == 'yes' ? 'selected' : '' }}>Yes</option>
-                            <option value="no" {{ ($company->on_due ?? 'yes') == 'no' ? 'selected' : '' }}>No</option>
+                            <option value="1" {{ ($company->on_due ?? '1') == '1' ? 'selected' : '' }}>Yes</option>
+                            <option value="0" {{ ($company->on_due ?? '0') == '0' ? 'selected' : '' }}>No</option>
                         </select>
                     </div>
 

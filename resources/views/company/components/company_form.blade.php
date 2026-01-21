@@ -7,7 +7,7 @@
                   </div>
                   <div class="modal-body">
                         <form id="companyForm">
-                              <input type="hidden" id="company_id">
+                              <input type="hidden" id="id">
                               <div class="mb-3">
                                     <label class="form-label">Company Name</label>
                                     <input type="text" class="form-control" id="name" name="name" placeholder="Enter company name">

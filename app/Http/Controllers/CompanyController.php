@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
@@ -148,6 +151,33 @@ class CompanyController extends Controller
 
         return response()->json(['success' => 'Company deleted successfully!']);
     }
+
+    // Old Company by email
+    public function oldCompanyByEmail($email)
+    {
+        try {
+            $api_url = env('CORE_BASE_URL') . '/get_company_by_email.php?email=' . $email;
+            $response = Http::get($api_url);
+
+            if (!$response->ok()) {
+                throw new Exception('Failed to fetch ERP data');
+            }
+
+            $companyData = $response->json();
+            $company = $companyData['data'] ?? null;
+
+            return response()->json([
+                'success' => true,
+                'data' => $company
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
     public function loginAsCompany($companyId)
     {
@@ -294,9 +324,9 @@ class CompanyController extends Controller
     public function toggleWhatsApp($company_id)
     {
         $company = Company::findOrFail($company_id);
-        if($company->green_active == 1){
+        if ($company->green_active == 1) {
             $company->green_active = 0;
-        }else{
+        } else {
             $company->green_active = 1;
         }
         $company->updatedby_id = Auth::id();
@@ -308,9 +338,9 @@ class CompanyController extends Controller
     public function toggleERP($company_id)
     {
         $company = Company::findOrFail($company_id);
-        if($company->erp_active == 1){
+        if ($company->erp_active == 1) {
             $company->erp_active = 0;
-        }else{
+        } else {
             $company->erp_active = 1;
         }
         $company->updatedby_id = Auth::id();
