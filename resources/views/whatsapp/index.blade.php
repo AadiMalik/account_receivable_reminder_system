@@ -211,7 +211,7 @@ Thank you.
             $('#phone').val(phone);
 
             let msg = `Dear ${name},
-            Your invoice # is ${document_number}. Your invoice amount is ${amount}.
+Your invoice # is ${document_number}. Your invoice amount is ${amount}.
 Please clear your payment.
 Thank you.`;
 
