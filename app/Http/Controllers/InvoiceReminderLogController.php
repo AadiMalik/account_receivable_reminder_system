@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\InvoiceReminderLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class InvoiceReminderLogController extends Controller
 {
@@ -31,49 +32,53 @@ class InvoiceReminderLogController extends Controller
 
     public function sendWhatsAppMessage(Request $request)
     {
-        $request->validate([
-            'invoice_id' => 'required|exists:customer_invoices,id',
-            'reminder_type'    => 'required|string',
-            'customer_name'    => 'required|string',
-            'customer_phone'    => 'required|string',
-            'message'    => 'required|string',
+        $validator = Validator::make($request->all(), [
+            'invoice_id'     => 'required|exists:customer_invoices,id',
+            'reminder_type'  => 'required|string',
+            'customer_name'  => 'required|string',
+            'customer_phone' => 'required|string',
+            'message'        => 'required|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => false,
+                'type'    => 'validation',
+                'message' => $validator->errors()->all()
+            ], 422);
+        }
 
         $invoice = CustomerInvoice::with(['customer', 'company'])
-            ->findOrFail($request->invoice_id);
+            ->find($request->invoice_id);
 
-        // message temporarily attach kar do invoice pe
-        $invoice->customer_name = $request->customer_name;
+        $invoice->customer_name  = $request->customer_name;
         $invoice->customer_phone = $request->customer_phone;
         $invoice->custom_message = $request->message;
-        $this->processReminder($invoice, $request->reminder_type);
+
+        // 🔥 RESULT RECEIVE
+        $result = $this->processReminder($invoice, $request->reminder_type);
+
+        if (!$result['status']) {
+            return response()->json($result, 400);
+        }
 
         return response()->json([
-            'status' => true,
-            'message' => 'Reminder process initiated'
+            'status'  => true,
+            'message' => 'WhatsApp message sent successfully'
         ]);
     }
+
 
     private function processReminder($invoice, $type)
     {
         $company  = Auth::user()->company;
         $customer = $invoice->customer;
 
-        $log = InvoiceReminderLog::create([
-            'company_id'     => $invoice->company_id,
-            'customer_invoice_id' => $invoice->id,
-            'customer_id'    => $customer?->id,
-            'reminder_type'  => $type,
-            'customer_phone' => $invoice?->customer_phone,
-            'request_payload' => json_encode([
-                'invoice_id' => $invoice->id,
-                'type' => $type
-            ])
-        ]);
-
         if (!$customer || !$invoice->customer_phone) {
-            $log->update(['error_message' => 'Customer phone missing']);
-            return;
+            return [
+                'status'  => false,
+                'message' => 'Customer phone number is missing'
+            ];
         }
 
         if (
@@ -81,48 +86,48 @@ class InvoiceReminderLogController extends Controller
             !$company->green_api_instance ||
             !$company->green_api_token
         ) {
-            $log->update(['error_message' => 'Company whatsapp configuration missing']);
-            return;
+            return [
+                'status'  => false,
+                'message' => 'Company WhatsApp configuration is missing'
+            ];
         }
 
         try {
+
             $exists = $this->checkNumber(
                 $company->green_api_instance,
                 $company->green_api_token,
                 $invoice->customer_phone
             );
 
-            $log->update(['whatsapp_exists' => $exists]);
-
             if (!$exists) {
-                return;
+                return [
+                    'status'  => false,
+                    'message' => 'This number is not registered on WhatsApp'
+                ];
             }
 
             $message = $invoice->custom_message
                 ?? "Dear {$invoice->customer_name}, your invoice {$invoice->document_number} amount {$invoice->balance_amount} is pending.";
 
-            // ✅ send message
-            $response = $this->sendMessage(
+            $this->sendMessage(
                 $company->green_api_instance,
                 $company->green_api_token,
                 $invoice->customer_phone,
                 $message
             );
 
-            $log->update([
-                'message_sent'        => true,
-                'message'             => $message,
-                'whatsapp_message_id' => $response['idMessage'] ?? null,
-                'response_payload'    => json_encode($response),
-                'sent_at'             => now(),
-            ]);
+            return [
+                'status'  => true
+            ];
         } catch (\Throwable $e) {
-            $log->update([
-                'message_sent' => false,
-                'error_message' => $e->getMessage()
-            ]);
+            return [
+                'status'  => false,
+                'message' => 'WhatsApp API error: ' . $e->getMessage()
+            ];
         }
     }
+
     private function checkNumber($instance, $token, $phone)
     {
         try {
