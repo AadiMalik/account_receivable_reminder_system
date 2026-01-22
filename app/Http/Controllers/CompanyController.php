@@ -156,7 +156,7 @@ class CompanyController extends Controller
     public function oldCompanyByEmail($email)
     {
         try {
-            $api_url = env('CORE_BASE_URL') . '/get_company_by_email.php?email=' . $email;
+            $api_url = env('CORE_BASE_URL') . '/get_company_by_email.php/' . $email;
             $response = Http::get($api_url);
 
             if (!$response->ok()) {
