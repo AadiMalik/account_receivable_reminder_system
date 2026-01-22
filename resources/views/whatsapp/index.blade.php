@@ -136,6 +136,7 @@
                                         <option value="{{ $invoice->id }}"
                                             data-name="{{ $invoice->customer->name ? $invoice->customer->name : $invoice->customer->commercial_name }}"
                                             data-phone="{{ $invoice->customer->phone }}"
+                                            data-document_number="{{ $invoice->document_number }}"
                                             data-amount="{{ number_format($invoice->total_amount, 2) }}">
                                             {{ $invoice->document_number }} - Issue
                                             Date:{{ $invoice->issue_date->format('d M Y') }} - Due
@@ -175,7 +176,7 @@
                             <label>Message<span class="text-danger">*</span></label>
                             <textarea name="message" id="message" rows="5" class="form-control" required>
 Dear customer,
-Your invoice amount is  amount.
+Your invoice # is document_number. Your invoice amount is  amount.
 Please clear your payment.
 Thank you.
                             </textarea>
@@ -203,13 +204,14 @@ Thank you.
 
             let name = option.data('name');
             let phone = option.data('phone');
+            let document_number = option.data('document_number');
             let amount = option.data('amount');
 
             $('#customer_name').val(name);
             $('#phone').val(phone);
 
             let msg = `Dear ${name},
-Your invoice amount is ${amount}.
+            Your invoice # is ${document_number}. Your invoice amount is ${amount}.
 Please clear your payment.
 Thank you.`;
 
