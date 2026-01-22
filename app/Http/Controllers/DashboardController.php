@@ -55,7 +55,7 @@ class DashboardController extends Controller
                 return [
                     'customer' => $log->customer?->name ?? $log->customer?->commercial_name ?? 'Unknown',
                     'message'  => $log->message ? $log->error_message ?? '' : '',
-                    'time'     => $log->sent_at ? $log->sent_at->format('d M, Y h:i A') : '-',
+                    'time'     => $log->sent_at ? $log->sent_at : '-',
                     'type'     => $log->message_sent ? 'sent' : 'failed',
                 ];
             });
