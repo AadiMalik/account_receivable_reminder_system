@@ -128,6 +128,7 @@
                 $('#name').val(data.name);
                 $('#email').val(data.email);
                 $('#phone').val(data.phone);
+                $('#company_id').val(data.company_id);
                 $('#createCompanyBtn').hide();
                 $('#updateCompanyBtn').show();
                 $('#companyModal').modal('show');
@@ -137,7 +138,7 @@
         // UPDATE
         $('#updateCompanyBtn').click(function(e) {
             e.preventDefault();
-            let id = $('#company_id').val();
+            let id = $('#id').val();
             let form = $('#companyForm');
             $.ajax({
                 url: '/company/' + id,

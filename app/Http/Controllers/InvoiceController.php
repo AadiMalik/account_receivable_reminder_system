@@ -61,7 +61,7 @@ class InvoiceController extends Controller
             $status = $log->message_sent ? 'Read' : 'Pending';
 
             return [
-                'date' => $log->sent_at ? $log->sent_at->format('d M, Y h:i A') : '-',
+                'date' => $log->sent_at ? $log->sent_at : '-',
                 'rule' => $rule,
                 'status' => $status,
             ];
