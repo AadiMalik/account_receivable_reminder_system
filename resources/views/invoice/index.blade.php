@@ -53,7 +53,7 @@
                             <td>{{ $invoice->document_number ?? '-' }}</td>
 
                             <td class="d-none d-lg-table-cell fw-semibold">
-                                {{ $invoice->customer->name ?? 'N/A' }}
+                                {{ $invoice->customer->name ? $invoice->customer->name : $invoice->customer->commercial_name }}
                             </td>
 
                             <td class="d-none d-sm-table-cell text-muted">

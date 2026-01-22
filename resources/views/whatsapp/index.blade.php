@@ -83,7 +83,7 @@
                 <tbody>
                     @foreach ($messages as $msg)
                         <tr class="{{ $msg->message_sent ? '' : 'table-primary' }}">
-                            <td>{{ $msg->customer->name ?? 'N/A' }}</td>
+                            <td>{{ $msg->customer->name ? $msg->customer->name : $msg->customer->commercial_name }}</td>
                             <td>{{ $msg->invoice->document_number ?? 'N/A' }}</td>
                             <td class="text-truncate" style="max-width: 250px;">
                                 {{ $msg->message ?? ($msg->error_message ?? 'No message') }}

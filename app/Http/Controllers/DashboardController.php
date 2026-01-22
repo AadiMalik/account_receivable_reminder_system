@@ -40,7 +40,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($inv) {
                 return [
-                    'customer' => !empty($inv->customer->name) ? $inv->customer->name : $inv->customer->commercial_name,
+                    'customer' => $inv->customer->name ? $inv->customer->name : $inv->customer->commercial_name,
                     'amount'   => $inv->amount,
                     'days'     => $inv->days,
                 ];
@@ -53,7 +53,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($log) {
                 return [
-                    'customer' => $log->customer?->name ?? $log->customer?->commercial_name ?? 'Unknown',
+                    'customer' => $log->customer->name ? $log->customer->name : $log->customer->commercial_name,
                     'message'  => $log->message ? $log->error_message ?? '' : '',
                     'time'     => $log->sent_at ? $log->sent_at : '-',
                     'type'     => $log->message_sent ? 'sent' : 'failed',
