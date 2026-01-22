@@ -159,7 +159,7 @@ class CompanyController extends Controller
             // Encode email safely for URL
             $api_url = env('CORE_BASE_URL') . '/get_company_by_email.php/' . urlencode($email);
 
-            $response = Http::get($api_url);
+            $response = Http::withoutVerifying()->get($api_url);
 
             if (!$response->ok()) {
                 throw new Exception('Failed to fetch ERP data');
