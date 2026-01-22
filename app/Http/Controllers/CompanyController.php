@@ -156,7 +156,9 @@ class CompanyController extends Controller
     public function oldCompanyByEmail($email)
     {
         try {
-            $api_url = env('CORE_BASE_URL') . '/get_company_by_email.php/' . $email;
+            // Encode email safely for URL
+            $api_url = env('CORE_BASE_URL') . '/get_company_by_email.php/' . urlencode($email);
+
             $response = Http::get($api_url);
 
             if (!$response->ok()) {
@@ -164,7 +166,16 @@ class CompanyController extends Controller
             }
 
             $companyData = $response->json();
-            $company = $companyData['data'] ?? null;
+
+            // Validate API response
+            if (empty($companyData) || empty($companyData['success']) || empty($companyData['data'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $companyData['message'] ?? 'Company not found',
+                ]);
+            }
+
+            $company = $companyData['data'];
 
             return response()->json([
                 'success' => true,
@@ -177,6 +188,7 @@ class CompanyController extends Controller
             ], 500);
         }
     }
+
 
 
     public function loginAsCompany($companyId)
