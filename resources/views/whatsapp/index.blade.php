@@ -86,7 +86,7 @@
                             <td>{{ $msg->customer->name ?? 'N/A' }}</td>
                             <td>{{ $msg->invoice->document_number ?? 'N/A' }}</td>
                             <td class="text-truncate" style="max-width: 250px;">
-                                {{ $msg->message_sent ?? ($msg->error_message ?? 'No message') }}</td>
+                                {{ $msg->message ?? ($msg->error_message ?? 'No message') }}</td>
                             <td>{{ $msg->sent_at ? $msg->sent_at->format('Y-m-d H:i') : 'N/A' }}</td>
                             <td>
                                 <span
@@ -172,7 +172,7 @@
                             <label>Message<span class="text-danger">*</span></label>
                             <textarea name="message" id="message" rows="5" class="form-control" required>
 Dear customer,
-Your invoice amount is Rs  amount.
+Your invoice amount is  amount.
 Please clear your payment.
 Thank you.
                             </textarea>
@@ -206,7 +206,7 @@ Thank you.
             $('#phone').val(phone);
 
             let msg = `Dear ${name},
-Your invoice amount is Rs ${amount}.
+Your invoice amount is ${amount}.
 Please clear your payment.
 Thank you.`;
 

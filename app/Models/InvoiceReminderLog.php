@@ -13,6 +13,7 @@ class InvoiceReminderLog extends Model
         'customer_invoice_id',
         'customer_id',
         'reminder_type',
+        'message',
         'customer_phone',
         'whatsapp_exists',
         'message_sent',

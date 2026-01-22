@@ -111,6 +111,7 @@ class InvoiceReminderLogController extends Controller
 
             $log->update([
                 'message_sent'        => true,
+                'message'             => $message,
                 'whatsapp_message_id' => $response['idMessage'] ?? null,
                 'response_payload'    => json_encode($response),
                 'sent_at'             => now(),
@@ -120,6 +121,38 @@ class InvoiceReminderLogController extends Controller
                 'message_sent' => false,
                 'error_message' => $e->getMessage()
             ]);
+        }
+    }
+    private function checkNumber($instance, $token, $phone)
+    {
+        try {
+
+            // phone format clean (92300xxxxxxx)
+            $phone = preg_replace('/[^0-9]/', '', $phone);
+
+            $url = "https://api.green-api.com/waInstance{$instance}/checkWhatsapp/{$token}";
+
+            $response = Http::timeout(20)->post($url, [
+                'phoneNumber' => $phone
+            ]);
+
+            if (!$response->successful()) {
+                return false;
+            }
+
+            $data = $response->json();
+
+            /*
+            Green API response example:
+            {
+              "existsWhatsapp": true
+            }
+        */
+
+            return isset($data['existsWhatsapp']) && $data['existsWhatsapp'] === true;
+        } catch (\Throwable $e) {
+
+            return false;
         }
     }
     private function sendMessage($instance, $token, $phone, $message)

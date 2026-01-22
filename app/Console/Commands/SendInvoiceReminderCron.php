@@ -146,6 +146,7 @@ class SendInvoiceReminderCron extends Command
 
             $log->update([
                 'message_sent' => true,
+                'message' => $message,
                 'whatsapp_message_id' => $response['idMessage'] ?? null,
                 'response_payload' => $response,
                 'sent_at' => now(),

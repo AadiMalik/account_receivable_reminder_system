@@ -54,7 +54,7 @@ class DashboardController extends Controller
             ->map(function ($log) {
                 return [
                     'customer' => $log->customer?->name ?? $log->customer?->commercial_name ?? 'Unknown',
-                    'message'  => $log->request_payload ? json_decode($log->request_payload, true)['message'] ?? '' : '',
+                    'message'  => $log->message ? $log->error_message ?? '' : '',
                     'time'     => $log->sent_at ? $log->sent_at->format('d M, Y h:i A') : '-',
                     'type'     => $log->message_sent ? 'sent' : 'failed',
                 ];
