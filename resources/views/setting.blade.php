@@ -174,7 +174,19 @@
                         <label for="max_reminders" class="form-label">Maximum reminders per invoice <span class="text-danger">*</span></label>
                         <input type="number" id="max_reminders" name="max_reminders" class="form-control" value="{{ old('max_reminders', $company->max_reminders ?? 5) }}" required>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">Reminder Message</label>
+                        <textarea name="reminder_message" class="form-control" rows="3">
+                        {{ old('reminder_message', $company->reminder_message ?? 'Dear {customer}, your invoice {document_no} amount {amount} is pending.') }}
+                        </textarea>
 
+                        <small class="text-muted">
+                            Use:
+                            <code>{customer}</code> for customer name,
+                            <code>{document_no}</code> for invoice number,
+                            <code>{amount}</code> for pending amount
+                        </small>
+                    </div>
                     <button class="btn btn-primary">Update Reminders</button>
                 </div>
             </div>
@@ -185,47 +197,51 @@
 
 @endsection
 <script>
-function toggleWhatsAppStatus(companyId) {
-    let badge = document.getElementById('whatsapp-status-badge');
-    let current = badge.textContent.trim();
-    let newStatus = current === 'Connected' ? 0 : 1;
+    function toggleWhatsAppStatus(companyId) {
+        let badge = document.getElementById('whatsapp-status-badge');
+        let current = badge.textContent.trim();
+        let newStatus = current === 'Connected' ? 0 : 1;
 
-    fetch(`/setting/toggle-whatsapp/${companyId}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ green_active: newStatus })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success){
-            badge.className = 'badge ' + (newStatus ? 'bg-success' : 'bg-danger');
-            badge.innerHTML = `<i class="bi ${newStatus ? 'bi-check-circle' : 'bi-x-circle'} me-1"></i>${newStatus ? 'Connected' : 'Disconnected'}`;
-        }
-    });
-}
+        fetch(`/setting/toggle-whatsapp/${companyId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    green_active: newStatus
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    badge.className = 'badge ' + (newStatus ? 'bg-success' : 'bg-danger');
+                    badge.innerHTML = `<i class="bi ${newStatus ? 'bi-check-circle' : 'bi-x-circle'} me-1"></i>${newStatus ? 'Connected' : 'Disconnected'}`;
+                }
+            });
+    }
 
-function toggleERPStatus(companyId) {
-    let badge = document.getElementById('erp-status-badge');
-    let current = badge.textContent.trim();
-    let newStatus = current === 'Connected' ? 0 : 1;
+    function toggleERPStatus(companyId) {
+        let badge = document.getElementById('erp-status-badge');
+        let current = badge.textContent.trim();
+        let newStatus = current === 'Connected' ? 0 : 1;
 
-    fetch(`/setting/toggle-erp/${companyId}`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({ erp_active: newStatus })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success){
-            badge.className = 'badge ' + (newStatus ? 'bg-success' : 'bg-danger');
-            badge.innerHTML = `<i class="bi ${newStatus ? 'bi-check-circle' : 'bi-x-circle'} me-1"></i>${newStatus ? 'Connected' : 'Disconnected'}`;
-        }
-    });
-}
+        fetch(`/setting/toggle-erp/${companyId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    erp_active: newStatus
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    badge.className = 'badge ' + (newStatus ? 'bg-success' : 'bg-danger');
+                    badge.innerHTML = `<i class="bi ${newStatus ? 'bi-check-circle' : 'bi-x-circle'} me-1"></i>${newStatus ? 'Connected' : 'Disconnected'}`;
+                }
+            });
+    }
 </script>

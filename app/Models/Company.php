@@ -27,6 +27,7 @@ class Company extends Model
         'after_due_1',
         'after_due_2',
         'max_reminders',
+        'reminder_message',
         //ERP
         'erp_system',
         'erp_api_base_url',

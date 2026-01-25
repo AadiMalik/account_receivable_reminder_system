@@ -219,6 +219,7 @@ Thank you.`;
         });
 
         $('#sendWhatsappBtn').click(function() {
+            $('#whatsappInvoiceModal').modal('hide');
             $.ajax({
                 url: "{{ url('whatsapp/send-message') }}",
                 type: "POST",
@@ -227,7 +228,6 @@ Thank you.`;
                 success: function(res) {
                     if (res.status) {
                         alert(res.message);
-                        $('#whatsappInvoiceModal').modal('hide');
                         location.reload();
                     } else {
                         alert(res.message);

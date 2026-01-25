@@ -107,7 +107,7 @@ class InvoiceReminderLogController extends Controller
                 ];
             }
 
-            $message = $invoice->custom_message
+            $message = '*' . $company->name . '*' . "\n" . $invoice->custom_message
                 ?? "Dear {$invoice->customer_name}, your invoice {$invoice->document_number} amount {$invoice->balance_amount} is pending.";
 
             $this->sendMessage(
@@ -133,7 +133,7 @@ class InvoiceReminderLogController extends Controller
         try {
 
             // phone format clean (92300xxxxxxx)
-            $phone = preg_replace('/[^0-9]/', '', $phone);
+            $phone = $this->formatPhone($phone);
 
             $url = "https://api.green-api.com/waInstance{$instance}/checkWhatsapp/{$token}";
 
@@ -162,7 +162,7 @@ class InvoiceReminderLogController extends Controller
     }
     private function sendMessage($instance, $token, $phone, $message)
     {
-        $phone = preg_replace('/[^0-9]/', '', $phone);
+        $phone = $this->formatPhone($phone);
 
         $url = "https://api.green-api.com/waInstance{$instance}/sendMessage/{$token}";
 
@@ -185,5 +185,19 @@ class InvoiceReminderLogController extends Controller
             'request_payload' => $payload,
             'response_payload' => $data
         ];
+    }
+    private function formatPhone($phone)
+    {
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+
+        // already country code hai
+        if (str_starts_with($phone, '502')) {
+            return $phone;
+        }
+
+        // leading 0 remove
+        $phone = ltrim($phone, '0');
+
+        return '92' . $phone;
     }
 }

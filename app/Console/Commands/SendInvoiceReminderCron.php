@@ -132,9 +132,21 @@ class SendInvoiceReminderCron extends Command
                 return;
             }
 
-            $message = "Dear {$customer->name}, your invoice "
-                . "{$invoice->document_number} amount "
-                . "{$invoice->balance_amount} is pending.";
+            $template = $company->reminder_message
+                ?? 'Dear {customer}, your invoice {document_no} amount {amount} is pending.';
+
+            $bodyMessage = str_replace(
+                ['{customer}', '{document_no}', '{amount}'],
+                [
+                    $customer->name,
+                    $invoice->document_number,
+                    number_format($invoice->balance_amount, 2)
+                ],
+                $template
+            );
+
+            // ✅ company name bold + newline
+            $message = '*' . $company->name . '*' . "\n" . $bodyMessage;
 
             // ✅ send message
             $response = $this->sendMessage(
@@ -161,7 +173,7 @@ class SendInvoiceReminderCron extends Command
         try {
 
             // phone format clean (92300xxxxxxx)
-            $phone = preg_replace('/[^0-9]/', '', $phone);
+            $phone = $this->formatPhone($phone);
 
             $url = "https://api.green-api.com/waInstance{$instance}/checkWhatsapp/{$token}";
 
@@ -198,7 +210,7 @@ class SendInvoiceReminderCron extends Command
     private function sendMessage($instance, $token, $phone, $message)
     {
         try {
-            $phone = preg_replace('/[^0-9]/', '', $phone);
+            $phone = $this->formatPhone($phone);
 
             $url = "https://api.green-api.com/waInstance{$instance}/sendMessage/{$token}";
 
@@ -231,5 +243,20 @@ class SendInvoiceReminderCron extends Command
 
             throw $e;
         }
+    }
+
+    private function formatPhone($phone)
+    {
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+
+        // already country code hai
+        if (str_starts_with($phone, '502')) {
+            return $phone;
+        }
+
+        // leading 0 remove
+        $phone = ltrim($phone, '0');
+
+        return '502' . $phone;
     }
 }

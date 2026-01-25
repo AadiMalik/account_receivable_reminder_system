@@ -319,6 +319,7 @@ class CompanyController extends Controller
             'after_due_1' => 'required|integer',
             'after_due_2' => 'required|integer',
             'max_reminders' => 'required|integer',
+            'reminder_message'=>'required|string',
         ]);
 
         $company->update([
@@ -327,6 +328,7 @@ class CompanyController extends Controller
             'after_due_1' => $request->after_due_1,
             'after_due_2' => $request->after_due_2,
             'max_reminders' => $request->max_reminders,
+            'reminder_message' => $request->reminder_message,
             'updatedby_id' => Auth::id(),
         ]);
 
