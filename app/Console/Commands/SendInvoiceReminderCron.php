@@ -103,7 +103,7 @@ class SendInvoiceReminderCron extends Command
 
         $log = InvoiceReminderLog::create([
             'company_id'     => $invoice->company_id,
-            'invoice_id'     => $invoice->id,
+            'customer_invoice_id'     => $invoice->id,
             'customer_id'    => $customer?->id,
             'reminder_type'  => $type,
             'customer_phone' => $customer?->phone,
