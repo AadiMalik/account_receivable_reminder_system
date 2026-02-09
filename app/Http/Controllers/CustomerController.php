@@ -116,7 +116,7 @@ class CustomerController extends Controller
 
                 return [
                     'message' => $message,
-                    'date' => $log->sent_at ? $log->sent_at->format('Y-m-d H:i') : '-',
+                    'date' => $log->sent_at??'-',
                     'type' => $type,
                 ];
             });
